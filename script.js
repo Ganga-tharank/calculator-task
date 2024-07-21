@@ -1,24 +1,35 @@
-const display = document.querySelector("#display");
+//Getting and Setting Buttons
+const display = document.querySelector(".display");
 const buttons = document.querySelectorAll("button");
+const specialChars = ["←", "/", "*", "-", "+", "=", "%"];
+let output = "";
 
-buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        if(btn.id === "=") {
-            display.value = eval(display.value);
-
-        }else if (btn.id === "ac"){
-            display.value = "";
-        }else if (btn.id == "de"){
-            display.value = display.value.slice(0, -1);
-        }else{
-            display.value +=btn.id;
+const calculate = (btnValue) => {
+    if (btnValue === "=" && output !== "") {
+        output = eval(output.replace("%", "/100"));
+    } else if (btnValue === "C") {
+        output = "";
+    } else if (btnValue === "←") {
+        output = output.toString().slice(0, -1);
+    } else {
+        if (output === "" && specialChars.includes(btnValue)) {
+            return;
         }
-    });
+        output += btnValue;
+    }
+    display.value = output;
+};
 
+buttons.forEach((button) => {
+    button.addEventListener("click", (e) => calculate(e.target.dataset.value));
 });
 
-// function displayValue(val){
-//     document.getElementById("display").value = document.getElementById("display").value + val
-// }
-
-
+// Add event listener for keyboard events
+document.addEventListener("keydown", (e) => {
+    const key = e.key;
+    // Check if the pressed key corresponds to a button's data-value
+    const button = Array.from(buttons).find((btn) => btn.dataset.value === key);
+    if (button) {
+        button.click(); // Simulate a click on the corresponding button
+    }
+});
